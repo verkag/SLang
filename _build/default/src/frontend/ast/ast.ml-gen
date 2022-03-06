@@ -1,0 +1,2 @@
+(** @canonical Ast.Ast_types *)
+module Ast_types = Ast__Ast_types

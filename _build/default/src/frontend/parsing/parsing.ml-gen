@@ -1,0 +1,10 @@
+(** @canonical Parsing.Lexer *)
+module Lexer = Parsing__Lexer
+
+
+(** @canonical Parsing.Parsed_ast *)
+module Parsed_ast = Parsing__Parsed_ast
+
+
+(** @canonical Parsing.Parser *)
+module Parser = Parsing__Parser
