@@ -14,18 +14,20 @@
 %token EQUAL 
 %token PLUS 
 %token MINUS 
-%token MULT  
+%token ASTERISK  
 %token DIV 
 %token REM 
 %token LANGLE 
 %token RANGLE 
 %token AND
 %token OR 
+%token EXMARK
 %token DOUBLEEQUAL
+%token AMPERSAND
 %token MALLOC
 %token FREE 
 %token VAR 
-%token FUNCTION 
+%token FUNC 
 %token TYPE_INT 
 %token TYPE_BOOL 
 %token TYPE_INTPOINTER 
@@ -33,7 +35,10 @@
 %token TYPE_VOID 
 %token TRUE 
 %token FALSE
-%token WHILE 
+%token WHILE
+%token CONTINUE
+%token BREAK
+%token RETURN
 %token IF 
 %token MAIN 
 %token PRINTF 
@@ -49,55 +54,34 @@
 
 %start program
 
-%type <Parsed_ast.program> program
-%type <block_expr> main  
-%type <funtionn> funtion 
-%type <fun_param> fun_param 
-%type <statement> statement
-%type <expr> expr 
-%type <id> id 
-%type <unop> unop 
-%type <binop> binop 
-%type <type_def> type_def 
-%type <block_expr> block_expr
-(*
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type
-%type  
-*)
-
-
+%type <Parsed_ast.program> program (* + *)
+%type <main> main (* + *)
+%type <functionn> functionn (* + *)
+%type <statement> statement (* + *)
+%type <expr> expr (* + *)
+%type <fun_param list> params (* + *)
+%type <fun_param> param (* + *)
+%type <ident> ident (* + *)
+%type <unop> unop (* - *)
+%type <binop> binop (* - *)
+%type <type_def> type_def (* + *)
+%type <block_expr> block_expr (* + *)
 %%
 
 program:
-| functions = list(function); main = main; EOF { Program(functions, main) }
+| functions=list(functionn); mainex=main; EOF { Program(functions, mainex) }
 
-function: 
-| FUNCTION; typed=type_def ; id = ID; params = params; body = block_expr { Func(typed, id, params, body) } 
+main:
+| MAIN; LPAREN; RPAREN; block=block_expr { Main(block) }
+
+functionn: 
+| FUNC; typed=type_def ; id=ident; params=params; body=block_expr { Func(typed, id, params, body) } 
 
 params: 
 | LPAREN; params=separated_list(COMMA, param); RPAREN { params }
 
 param:
-| param_type=type_def; param_name=ID { FParam(param_type, param_name) }
+| param_type=type_def; param_name=ident { FParam(param_type, param_name) } (* maybe need local ident*)
 
 type_def:
 | TYPE_INT { Int }
@@ -107,26 +91,54 @@ type_def:
 | TYPE_VOID { Void }
 
 block_expr:
-| LBRACE; stmts=stmseparated_list(statement, SEMICOLON); RBRACE { BlockExpr($startpos, stmts) } 
+| LBRACE; stmts=separated_list(SEMICOLON, statement); RBRACE { BlockExpr(stmts) } 
 
 statement:
-| IF; cond=expr; then_stmt=expr { If($startpos, cond, expr)}
-| WHILE; cond=expr; loop=BlockExpr { While($startpos, cond, loop) }
-| BREAK
-| CONTINUE
-| MALLOC
-| FREE
-| VAR; typed=type_def; id=ID; EQUAL; value=expr {  } // TODO: add free continue and break to tokens
+| block=block_expr { Block($startpos, block) }
+| IF; cond=expr; then_stmt=statement { If($startpos, cond, then_stmt)}
+| WHILE; cond=expr; loop=statement { While($startpos, cond, loop) }
+| RETURN; ret_val=expr { Return($startpos, ret_val) }
+| BREAK { Break($startpos) }
+| CONTINUE { Continue($startpos) }
+| MALLOC; LPAREN; typed=type_def; size=expr; RPAREN { Malloc($startpos, typed, size) }
+| FREE; LPAREN; id=ident; RPAREN { Free($startpos, id) }
+| VAR; typed=type_def; id=ident; EQUAL; value=expr { VarDecl($startpos, typed, id, value) } // TODO: add free continue and break to tokens
+| id=ident; EQUAL; value=expr { Assign($startpos, id, value) }
+| e=expr { Expr($startpos, e) }
+ident:
+| id=ID { Id(id) }
+
+expr:
+| LPAREN; e=expr; RPAREN { e }
+| i=INT { Integer($startpos, i) }
+| s=STRING { String($startpos,s) }
+| TRUE { Bool($startpos, true) }
+| FALSE { Bool($startpos, false) }
+| id=ident { Identifier($startpos, id) }
+| e1=expr; o=binop; e2=expr { Binop($startpos, e1, o, e2) }
+| o=unop; e=expr { Unop($startpos, o, e) }
+| id=ident; LPAREN; exprs=separated_list(COMMA, expr); RPAREN { Funcall($startpos, id, exprs) }
 
 
+%inline binop:   (* read documentation *)
+| PLUS { Add }
+| MINUS { Sub }
+| ASTERISK { Mult }
+| DIV { Div }
+| REM { Mod }
+| LANGLE { Lt }
+| AND { And } 
+| OR { Or }
+| DOUBLEEQUAL { Eq }
+
+%inline unop:
+| AMPERSAND { Addrof }
+| ASTERISK { Deref }
+| EXMARK { Not}
+| MINUS { Neg }
 
 
-
-
-
-
-
-
+(*TODO: add printf to statements*)
 
 
 

@@ -1,5 +1,8 @@
 type loc = Lexing.position 
 
+
+
+(*
 module type ID = sig
   type t
 end
@@ -10,6 +13,10 @@ end
 
 module Var_name : ID = String_id 
 module Func_name : ID = String_id
+*)
+
+type ident = 
+    | Id of string 
 
 type type_def = 
     | Int 
@@ -32,10 +39,9 @@ type binop =
 
 type unop = 
     | Not 
-    | Neq 
     | Addrof
     | Deref
-
+    | Neg
 
 
 

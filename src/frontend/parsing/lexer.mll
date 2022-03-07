@@ -5,7 +5,7 @@
 
   exception SyntaxError of string
 
-  let next_line lexbuff = 
+  let next_line lexbuf = 
     let pos = lexbuf.lex_curr_p in
     lexbuf.lex_curr_p <-
       { 
@@ -19,7 +19,7 @@ let digit = ['0'-'9']
 let alpha = ['a'-'z' 'A'-'Z']
 
 let id = ['A'-'Z'] (alpha)*
-let int = '-'? digit
+let int = '-'? (digit)+
 
 let whitespace = [' ' '\t']+
 let newline = '\r' | '\n' | "\r\n"
@@ -36,18 +36,20 @@ rule read_token = parse
   | "=" { EQUAL }
   | "+" { PLUS }
   | "-" { MINUS }
-  | "*" { MULT } 
+  | "*" { ASTERISK } 
   | "/" { DIV }
   | "%" { REM }
   | "<" { LANGLE }
   | ">" { RANGLE }
   | "&&" { AND }
   | "||" { OR }
+  | "!" { EXMARK }
   | "==" { DOUBLEEQUAL }
+  | "&" { AMPERSAND }
   | "malloc" { MALLOC }
   | "free" { FREE }
   | "var" { VAR }
-  | "func" { FUNCTION }
+  | "func" { FUNC }
   | "int" { TYPE_INT }
   | "bool" { TYPE_BOOL }
   | "int*" { TYPE_INTPOINTER }
@@ -56,9 +58,12 @@ rule read_token = parse
   | "true" { TRUE }
   | "false" { FALSE }
   | "while" { WHILE }
+  | "continue" { CONTINUE }
+  | "break" { BREAK }
+  | "return" { RETURN }
   | "if" { IF }
   | "main" { MAIN }
-  | "printf" {PRINTF } 
+  | "printf" { PRINTF } 
   | whitespace { read_token lexbuf }
   | int { INT (int_of_string (Lexing.lexeme lexbuf))}
   | id { ID (Lexing.lexeme lexbuf) }
