@@ -1,0 +1,3 @@
+(library
+ (name typechecker)
+ (libraries core base fmt parsing))
