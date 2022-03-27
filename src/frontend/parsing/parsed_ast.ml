@@ -23,7 +23,7 @@ and statement =
     | Continue of loc 
     | Malloc of loc * type_def * expr (* not working well with vardecl*)
     | Free of loc * ident 
-    | VarDecl of loc * type_def * ident * expr 
+    | VarDecl of loc * type_def * Var_name.t * expr 
     | Assign of loc * ident * expr
     | Expr of loc * expr
     | Printf of loc * string * expr list 

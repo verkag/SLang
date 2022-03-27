@@ -2,7 +2,9 @@ open Base
 
 type loc = Lexing.position 
 
-
+let string_of_loc loc = 
+    Fmt.str "Line:%d Position: %d" loc.Lexing.pos_lnum
+        (loc.Lexing.pos_cnum - loc.Lexing.pos_bol + 1)
 
 
 module type ID = sig
@@ -23,14 +25,13 @@ end
 module Var_name : ID = String_id 
 module Func_name : ID = String_id
 
-
 type type_def = 
-| Int 
-| Char 
-| IntPoint 
-| CharPoint
-| Bool
-| Void
+    | Int 
+    | Char 
+    | IntPoint 
+    | CharPoint
+    | Bool
+    | Void
 
 type fun_param = FParam of type_def * Var_name.t
 

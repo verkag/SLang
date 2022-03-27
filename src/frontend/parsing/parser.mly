@@ -102,7 +102,7 @@ statement:
 | CONTINUE { Continue($startpos) }
 | MALLOC; LPAREN; typed=type_def; size=expr; RPAREN { Malloc($startpos, typed, size) }
 | FREE; LPAREN; id=ident; RPAREN { Free($startpos, id) }
-| VAR; typed=type_def; id=ident; EQUAL; value=expr { VarDecl($startpos, typed, id, value) } // TODO: add free continue and break to tokens
+| VAR; typed=type_def; id=ID; EQUAL; value=expr { VarDecl($startpos, typed, Var_name.of_string id, value) } // TODO: add free continue and break to tokens
 | id=ident; EQUAL; value=expr { Assign($startpos, id, value) }
 | e=expr { Expr($startpos, e) }
 

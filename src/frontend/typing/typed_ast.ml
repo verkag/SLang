@@ -10,7 +10,7 @@ type expr =
   | Identifier of loc * ident 
   | Binop of loc * type_def * expr * binop * expr
   | Unop of loc * type_def * unop * expr  
-  | Funcall of loc * type_def * ident * expr list
+  | Funcall of loc * type_def * Func_name.t * expr list
 
 type block_expr = BlockExpr of loc * type_def * statement list 
 
@@ -29,7 +29,7 @@ and statement =
 
 (*type fun_param = FParam of type_def * ident (* can be moved to ast_types.ml *)*)
 
-type functionn = Func of type_def * ident * fun_param list * block_expr 
+type functionn = Func of type_def * Func_name.t * fun_param list * block_expr 
 
 type main = Main of block_expr 
 
