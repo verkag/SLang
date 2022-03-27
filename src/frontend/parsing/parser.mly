@@ -62,8 +62,8 @@
 %type <fun_param list> params (* + *)
 %type <fun_param> param (* + *)
 %type <ident> ident (* + *)
-%type <unop> unop (* - *)
-%type <binop> binop (* - *)
+%type <unop> unop (* +- *)
+%type <binop> binop (* +- *)
 %type <type_def> type_def (* + *)
 %type <block_expr> block_expr (* + *)
 %%
@@ -75,13 +75,13 @@ main:
 | MAIN; LPAREN; RPAREN; block=block_expr { Main(block) }
 
 functionn: 
-| FUNC; typed=type_def ; id=ident; params=params; body=block_expr { Func(typed, id, params, body) } 
+| FUNC; typed=type_def ; id=ID; params=params; body=block_expr { Func(typed, Func_name.of_string id, params, body) } 
 
 params: 
 | LPAREN; params=separated_list(COMMA, param); RPAREN { params }
 
 param:
-| param_type=type_def; param_name=ident { FParam(param_type, param_name) } (* maybe need local ident*)
+| param_type=type_def; param_name=ID { FParam(param_type, Var_name.of_string param_name) } (* maybe need local ident*)
 
 type_def:
 | TYPE_INT { Int }
@@ -105,8 +105,9 @@ statement:
 | VAR; typed=type_def; id=ident; EQUAL; value=expr { VarDecl($startpos, typed, id, value) } // TODO: add free continue and break to tokens
 | id=ident; EQUAL; value=expr { Assign($startpos, id, value) }
 | e=expr { Expr($startpos, e) }
+
 ident:
-| id=ID { Id(id) }
+| id=ID { Id(Var_name.of_string id) }
 
 expr:
 | LPAREN; e=expr; RPAREN { e }
@@ -117,10 +118,10 @@ expr:
 | id=ident { Identifier($startpos, id) }
 | e1=expr; o=binop; e2=expr { Binop($startpos, e1, o, e2) }
 | o=unop; e=expr { Unop($startpos, o, e) }
-| id=ident; LPAREN; exprs=separated_list(COMMA, expr); RPAREN { Funcall($startpos, id, exprs) }
+| id=ID; LPAREN; exprs=separated_list(COMMA, expr); RPAREN { Funcall($startpos, Func_name.of_string id, exprs) }
 
 
-%inline binop:   (* read documentation *)
+%inline binop:   
 | PLUS { Add }
 | MINUS { Sub }
 | ASTERISK { Mult }
@@ -139,7 +140,7 @@ expr:
 
 
 (*TODO: add printf to statements*)
-
+(*TODO: add unops and binops and make correct precedence*)
 
 
 

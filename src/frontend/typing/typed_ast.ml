@@ -1,7 +1,7 @@
 open Ast.Ast_types
 
-type idnet = 
-  | Id of type_def * string
+type ident = 
+  | Id of type_def * Var_name.t
 
 type expr = 
   | Integer of loc * int 
@@ -27,13 +27,13 @@ and statement =
   | Assign of loc * ident * expr (* need to introduce separation between ident and plain var name *) 
   | Expr of loc * expr
 
-type fun_param = FParam of type_def * ident (* can be moved to ast_types.ml *)
+(*type fun_param = FParam of type_def * ident (* can be moved to ast_types.ml *)*)
 
 type functionn = Func of type_def * ident * fun_param list * block_expr 
 
 type main = Main of block_expr 
 
-type program of Program of functionn list * main 
+type program = Program of functionn list * main 
 
 
 
