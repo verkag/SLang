@@ -15,9 +15,9 @@ type expr =
 type block_expr = BlockExpr of loc * type_def * statement list 
 
 and statement =
-  | Block of loc * block_expr
-  | If of loc * expr * statement
-  | While of loc * expr * statement 
+  (* TODO: remove block form statements *)
+  | If of loc * type_def * expr * block_expr * block_expr
+  | While of loc * expr * block_expr
   | Return of loc * type_def * expr 
   | Break of loc 
   | Continue of loc 
@@ -26,7 +26,8 @@ and statement =
   | VarDecl of loc * type_def * ident * expr
   | Assign of loc * ident * expr (* need to introduce separation between ident and plain var name *) 
   | Expr of loc * expr
-
+  | Printf of loc * string * expr list
+  
 (*type fun_param = FParam of type_def * ident (* can be moved to ast_types.ml *)*)
 
 type functionn = Func of type_def * Func_name.t * fun_param list * block_expr 

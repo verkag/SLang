@@ -28,9 +28,13 @@ type binop =
     | Div 
     | Mod 
     | Eq 
+    | NotEq
     | And 
     | Or 
     | Lt 
+    | LtEq
+    | Gt
+    | GtEq
 
 type unop = 
     | Not 

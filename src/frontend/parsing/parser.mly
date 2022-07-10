@@ -91,12 +91,11 @@ type_def:
 | TYPE_VOID { Void }
 
 block_expr:
-| LBRACE; stmts=separated_list(SEMICOLON, statement); RBRACE { BlockExpr(stmts) } 
+| LBRACE; stmts=separated_list(SEMICOLON, statement); RBRACE { BlockExpr($startpos, stmts) } 
 
 statement:
-| block=block_expr { Block($startpos, block) }
-| IF; cond=expr; then_stmt=statement { If($startpos, cond, then_stmt)}
-| WHILE; cond=expr; loop=statement { While($startpos, cond, loop) }
+| IF; cond=expr; then_stmt=block_expr; else_stmt=block_expr { If($startpos, cond, then_stmt, else_stmt)}
+| WHILE; cond=expr; loop=block_expr { While($startpos, cond, loop) }
 | RETURN; ret_val=expr { Return($startpos, ret_val) }
 | BREAK { Break($startpos) }
 | CONTINUE { Continue($startpos) }

@@ -7,21 +7,21 @@ type expr =
     | Integer of loc * int 
     | String of loc * string    (*  !!!!  *)
     | Bool of loc * bool
-    | Identifier of loc * ident 
+    | Identifier of loc * ident (* maybe need to hold also type *)
     | Binop of loc * expr * binop * expr
     | Unop of loc * unop * expr
     | Funcall of loc * Func_name.t * expr list (* think about side effects *)
 
-type block_expr = BlockExpr of statement list  (*TODO: add location tracking*)
+type block_expr = BlockExpr of loc * statement list  (*TODO: add location tracking*)
 
 and statement = 
-    | Block of loc * block_expr (* maybe neet to be removed. Then add block expr insted of statement if ifthenelse, whilel etc*)
-    | If of loc * expr * statement
-    | While of loc * expr * statement
+    (*TODO: remove block form parser*)    
+    | If of loc * expr * block_expr * block_expr (*TODO: add to parser block exprs*)
+    | While of loc * expr * block_expr (*TODO add to parser*)
     | Return of loc * expr
     | Break of loc 
     | Continue of loc 
-    | Malloc of loc * type_def * expr (* not working well with vardecl*)
+    | Malloc of loc * type_def * expr (* TODO: remove type_def form parser*)
     | Free of loc * ident 
     | VarDecl of loc * type_def * Var_name.t * expr 
     | Assign of loc * ident * expr

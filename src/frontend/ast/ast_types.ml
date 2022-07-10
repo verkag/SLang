@@ -42,9 +42,14 @@ type binop =
     | Div 
     | Mod 
     | Eq 
+    | NotEq
     | And 
     | Or 
     | Lt
+    | LtEq 
+    | Gt 
+    | GtEq 
+    (* TODO: add some binops to parser*)
 
 type unop = 
     | Not 
